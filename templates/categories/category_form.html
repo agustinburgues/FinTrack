@@ -1,0 +1,103 @@
+{% extends "base/base.html" %}
+
+{% block title %}
+{% if object %}
+Editar categoría
+{% else %}
+Nueva categoría
+{% endif %}
+{% endblock %}
+
+{% block content %}
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow">
+            <div class="card-header">
+                <h3 class="mb-0">
+                    {% if object %}
+                        Editar categoría
+                    {% else %}
+                        Nueva categoría
+                    {% endif %}
+                </h3>
+            </div>
+
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label">Nombre</label>
+                        {{ form.name }}
+                        {{ form.name.errors }}
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Tipo</label>
+                        {{ form.category_type }}
+                        {{ form.category_type.errors }}
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Color</label>
+                        <div class="d-flex flex-wrap gap-2 mb-3">
+                            <button type="button" class="btn p-0 color-btn" data-color="#0d6efd" style="width:35px;height:35px;background:#0d6efd;border-radius:50%;"></button>
+
+                            <button type="button" class="btn p-0 color-btn" data-color="#198754" style="width:35px;height:35px;background:#198754;border-radius:50%;"></button>
+
+                            <button type="button" class="btn p-0 color-btn" data-color="#dc3545" style="width:35px;height:35px;background:#dc3545;border-radius:50%;"></button>
+
+                            <button type="button" class="btn p-0 color-btn" data-color="#ffc107" style="width:35px;height:35px;background:#ffc107;border-radius:50%;"></button>
+
+                            <button type="button" class="btn p-0 color-btn" data-color="#fd7e14" style="width:35px;height:35px;background:#fd7e14;border-radius:50%;"></button>
+
+                            <button type="button" class="btn p-0 color-btn" data-color="#6f42c1" style="width:35px;height:35px;background:#6f42c1;border-radius:50%;"></button>
+
+                            <button type="button" class="btn p-0 color-btn" data-color="#20c997" style="width:35px;height:35px;background:#20c997;border-radius:50%;"></button>
+
+                            <button type="button" class="btn p-0 color-btn" data-color="#6c757d" style="width:35px;height:35px;background:#6c757d;border-radius:50%;"></button>
+                        </div>
+
+                        <div class="mb-2">
+                            <small class="text-muted">
+                                O elige un color personalizado:
+                            </small>
+                        </div>
+
+                        {{ form.color }}
+
+                        {{ form.color.errors }}
+
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label">
+                            Icono (emoji opcional)
+                        </label>
+                        {{ form.icon }}
+                        {{ form.icon.errors }}
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'categories:list' %}" class="btn btn-secondary">
+                            Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fa-solid fa-floppy-disk"></i>
+                            Guardar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.querySelectorAll(".color-btn").forEach(button => {
+    button.addEventListener("click", function () {
+        document.getElementById("id_color").value = this.dataset.color;
+    });
+});
+</script>
+{% endblock %}

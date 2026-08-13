@@ -1,0 +1,55 @@
+body{
+    background:#f8fafc;
+}
+
+.navbar{
+    padding:14px 0;
+}
+
+.display-3{
+    color:#1f2937;
+}
+
+section{
+    padding-top:40px;
+    padding-bottom:40px;
+}
+
+.card{
+    border:none;
+    border-radius:15px;
+}
+
+.btn{
+    border-radius:10px;
+}
+
+.card{
+    transition:.3s;
+}
+
+.card:hover{
+
+    transform:translateY(-5px);
+
+}
+
+.dashboard-card{
+    transition:.25s;
+    border:none;
+    border-radius:15px;
+}
+
+.dashboard-card:hover{
+    transform:translateY(-4px);
+    box-shadow:0 .5rem 1rem rgba(0,0,0,.15);
+}
+
+.dashboard-card i{
+    font-size:2rem;
+}
+
+.dashboard-card h3{
+    font-size:2rem;
+    font-weight:700;
+}

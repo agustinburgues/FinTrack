@@ -1,0 +1,24 @@
+{% extends "base/base.html" %}
+
+{% block title %}Agregar dinero{% endblock %}
+
+{% block content %}
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow">
+            <div class="card-body">
+                <h2 class="mb-4">Agregar dinero a "{{ goal.name }}"</h2>
+                <form method="post">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'goals:detail' goal.pk %}" class="btn btn-secondary">Cancelar</a>
+                        <button type="submit" class="btn btn-success">Guardar aporte</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

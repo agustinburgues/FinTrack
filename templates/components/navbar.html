@@ -1,0 +1,111 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
+
+    <div class="container">
+
+        <a class="navbar-brand fw-bold" href="{% url 'home' %}">
+            <i class="fa-solid fa-wallet"></i> 
+            FinTrack
+        </a>
+
+        <button class="navbar-toggler" type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+
+            {% if user.is_authenticated %}
+
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}" href="{% url 'home' %}">
+                        <i class="fa-solid fa-house"></i>
+                        Inicio
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link {% if 'transaction' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'transaction_list' %}">
+                        <i class="fa-solid fa-money-bill-transfer"></i>
+                        Transacciones
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link {% if request.resolver_match.namespace == 'categories' %}active{% endif %}" href="{% url 'categories:list' %}">
+                        <i class="fa-solid fa-tags"></i>
+                        Categorías
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'budgets:list' %}">
+                        <i class="fa-solid fa-wallet"></i> 
+                        Presupuestos
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'goals:list' %}">
+                        Metas
+                    </a>
+                </li>
+
+            </ul>
+
+            <div class="dropdown">
+                <button class="btn btn-outline-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    {% if user.profile_picture %}
+                        <img
+                            src="{{ user.profile_picture.url }}"
+                            alt="Perfil"
+                            width="32"
+                            height="32"
+                            class="rounded-circle me-2"
+                            style="object-fit: cover;">
+                    {% else %}
+                        <i class="fa-solid fa-user-circle me-2"></i>
+                    {% endif %}
+
+                    Hola, {{ user.username }}
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end">
+                    <li>
+                        <a class="dropdown-item" href="{% url 'profile' %}">
+                            <i class="fa-solid fa-user"></i>Mi perfil
+                        </a>
+                    </li>
+
+                    <li>
+                        <a class="dropdown-item" href="{% url 'password_change' %}">
+                            <i class="fa-solid fa-key"></i>Cambiar contraseña
+                        </a>
+                    </li>
+                    <li><hr class="dropdown-divider"></li>
+
+                    <li>
+                        <form
+                            method="post"
+                            action="{% url 'logout' %}">
+
+                            {% csrf_token %}
+
+                            <button type="submit" class="dropdown-item text-danger">
+                                <i class="fa-solid fa-right-from-bracket"></i>Cerrar sesión
+                            </button>
+                        </form>
+                    </li>
+                </ul>
+            </div>
+        
+            {% else %}
+            <div class="ms-auto">
+                <a href="{% url 'login' %}" class="btn btn-outline-light me-2">Iniciar sesión</a>
+
+                <a href="{% url 'register' %}" class="btn btn-light">Crear cuenta</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</nav>

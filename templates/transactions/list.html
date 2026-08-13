@@ -1,0 +1,222 @@
+{% extends "base/base.html" %}
+
+{% block title %}Transacciones{% endblock %}
+
+{% block content %}
+
+<h2 class="mb-4">Transacciones</h2>
+
+<a href="{% url 'transaction_create' %}" class="btn btn-primary mb-3">
+    Nueva transacción
+</a>
+
+<a href="{% url 'export_transactions_csv' %}"class="btn btn-success mb-3">
+    <i class="fa-solid fa-file-csv"></i>
+    Exportar CSV
+</a>
+
+<form method="get" class="row g-3 mb-4">
+
+    <div class="col-md-3">
+        <input
+            type="text"
+            name="search"
+            class="form-control"
+            placeholder="Buscar..."
+            value="{{ request.GET.search }}">
+    </div>
+
+    <div class="col-md-3">
+        <select name="category" class="form-select">
+
+            <option value="">Todas las categorías</option>
+
+            {% for category in categories %}
+
+            <option
+                value="{{ category.id }}"
+                {% if request.GET.category == category.id|stringformat:"s" %}
+                    selected
+                {% endif %}>
+
+                {{ category.name }}
+
+            </option>
+
+            {% endfor %}
+
+        </select>
+    </div>
+
+    <div class="col-md-2">
+        <select name="type" class="form-select">
+
+            <option value="">Todos los tipos</option>
+
+            <option
+                value="income"
+                {% if request.GET.type == "income" %}
+                    selected
+                {% endif %}>
+                Ingreso
+            </option>
+
+            <option
+                value="expense"
+                {% if request.GET.type == "expense" %}
+                    selected
+                {% endif %}>
+                Gasto
+            </option>
+
+        </select>
+    </div>
+
+    <div class="col-md-2">
+        <input
+            type="date"
+            name="date_from"
+            class="form-control"
+            value="{{ request.GET.date_from }}">
+    </div>
+
+    <div class="col-md-2">
+        <input
+            type="date"
+            name="date_to"
+            class="form-control"
+            value="{{ request.GET.date_to }}">
+    </div>
+
+    <div class="col-12 text-end">
+        <button type="submit" class="btn btn-primary">
+            <i class="fa-solid fa-filter"></i>
+            Filtrar
+        </button>
+        <a href="{% url 'transaction_list' %}" class="btn btn-outline-secondary">Limpiar filtros</a>
+    </div>
+</form>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h5 class="mb-0">
+        Total de transacciones:
+        <span class="badge bg-primary">
+            {{ transactions.paginator.count }}
+        </span>
+    </h5>
+</div>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Fecha</th>
+            <th>Categoría</th>
+            <th>Descripción</th>
+            <th>Tipo</th>
+            <th class="text-end">Importe</th>
+            <th class="text-center">Acciones</th>
+        </tr>
+    </thead>
+
+    <tbody>
+
+        {% for transaction in transactions %}
+        <tr>
+            <td>{{ transaction.date }}</td>
+
+            <td>
+                <span
+                    style="
+                        display:inline-block;
+                        width:14px;
+                        height:14px;
+                        border-radius:50%;
+                        background:{{ transaction.category.color }};
+                        margin-right:8px;
+                    ">
+                </span>
+                <span style="font-size:20px;">
+                    {{ transaction.category.icon|default:"📁" }}
+                </span>
+                <strong>
+                    {{ transaction.category.name }}
+                </strong>
+            </td>
+
+            <td>{{ transaction.description }}</td>
+
+            <td>
+                {% if transaction.transaction_type == "income" %}
+                <span class="badge bg-success">Ingreso</span>
+                {% else %}
+                <span class="badge bg-danger">Gasto</span>
+                {% endif %}
+            </td>
+
+            <td class="text-end">
+                {% if transaction.transaction_type == "income" %}
+                <span class="text-success fw-bold">+ {{ transaction.amount }} €</span>
+                {% else %}
+                <span class="text-danger fw-bold">- {{ transaction.amount }} €</span>
+                {% endif %}
+            </td>
+
+            <td class="text-center">
+                <a href="{% url 'transaction_update' transaction.pk %}" class="btn btn-warning btn-sm">
+                <i class="fa-solid fa-pen"></i>
+                Editar
+                </a>
+                <a href="{% url 'transaction_delete' transaction.pk %}" class="btn btn-danger btn-sm">
+                <i class="fa-solid fa-trash"></i>
+                Eliminar
+                </a>
+            </td>
+        </tr>
+
+        {% empty %}
+
+        <tr>
+            <td colspan="6" class="text-center py-4">
+                <i class="fa-solid fa-wallet fa-2x mb-3 text-secondary"></i>
+                <p class="mb-0">Todavía no tienes transacciones registradas.</p>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+    {% if transactions.has_other_pages %}
+
+    <nav class="mt-4">
+        <ul class="pagination justify-content-center">
+
+            {% if transactions.has_previous %}
+
+            <li class="page-item">
+                <a class="page-link" href="?page={{ transactions.previous_page_number }}">Anterior</a>
+            </li>
+
+            {% endif %}
+
+            {% for num in transactions.paginator.page_range %}
+
+            <li class="page-item {% if transactions.number == num %}active{% endif %}">
+                <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+            </li>
+
+            {% endfor %}
+
+            {% if transactions.has_next %}
+
+            <li class="page-item">
+                <a class="page-link" href="?page={{ transactions.next_page_number }}">Siguiente </a>
+            </li>
+
+            {% endif %}
+
+        </ul>
+    </nav>
+
+    {% endif %}
+
+{% endblock %}

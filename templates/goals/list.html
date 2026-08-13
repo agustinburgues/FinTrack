@@ -1,0 +1,118 @@
+{% extends "base/base.html" %}
+
+{% block title %}Metas{% endblock %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Metas de ahorro</h2>
+    <a href="{% url 'goals:create' %}" class="btn btn-primary">Nueva meta</a>
+</div>
+
+{% if goals %}
+
+<div class="card shadow">
+    <div class="card-body">
+        <table class="table table-hover align-middle">
+            <thead>
+                <tr>
+                    <th>Meta</th>
+                    <th>Objetivo</th>
+                    <th>Ahorrado</th>
+                    <th>Restante</th>
+                    <th>Progreso</th>
+                    <th>Estado</th>
+                    <th class="text-end">Acciones</th>
+                </tr>
+            </thead>
+
+            <tbody>
+            {% for goal in goals %}
+                <tr>
+                    <td><strong>{{ goal.name }}</strong></td>
+                    <td>€ {{ goal.target_amount }}</td>
+                    <td class="text-success"> € {{ goal.saved_amount }}</td>
+                    <td>
+                        {% if goal.remaining > 0 %}
+                            € {{ goal.remaining }}
+                        {% else %}
+                            <span class="text-success">Completada</span>
+                        {% endif %}
+                    </td>
+
+                    <td style="width:220px;">
+                        <div class="progress" style="height:24px;">
+                            <div class="progress-bar
+                                {% if goal.status_color == 'success' %}
+                                    bg-success
+                                {% elif goal.status_color == 'warning' %}
+                                    bg-warning text-dark
+                                {% else %}
+                                    bg-primary
+                                {% endif %}"
+                            style="width:{{ goal.percentage }}%;">
+                                <span class="fw-bold">
+                                    {{ goal.percentage }}%
+                                </span>
+
+                            </div>
+                        </div>
+                    </td>
+
+                    <td>
+                        <span class="badge
+                        {% if goal.status_color == 'success' %}
+                            bg-success
+                        {% elif goal.status_color == 'warning' %}
+                            bg-warning text-dark
+                        {% else %}
+                            bg-primary
+                        {% endif %}">
+                            {{ goal.status }}
+                        </span>
+                    </td>
+
+                    <td class="text-end">
+                        <a href="{% url 'goals:contribute' goal.pk %}" class="btn btn-sm btn-success">
+                            <i class="fa-solid fa-money-bill-wave"></i>
+                        </a>
+
+                        <a href="{% url 'goals:update' goal.pk %}" class="btn btn-warning btn-sm">Editar</a>
+
+                        <a href="{% url 'goals:delete' goal.pk %}" class="btn btn-danger btn-sm">Eliminar</a>
+
+                        <a href="{% url 'goals:detail' goal.pk %}" class="btn btn-info btn-sm">Ver detalle</a>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% else %}
+
+<div class="card shadow">
+    <div class="card-body text-center py-5">
+
+        <i class="fa-solid fa-bullseye fa-3x text-muted mb-3"></i>
+
+        <h4>No tenés metas creadas</h4>
+
+        <p class="text-muted">
+            Creá tu primera meta de ahorro.
+        </p>
+
+        <a href="{% url 'goals:create' %}"
+           class="btn btn-primary">
+
+            Crear meta
+
+        </a>
+
+    </div>
+</div>
+
+{% endif %}
+
+{% endblock %}

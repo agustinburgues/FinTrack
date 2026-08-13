@@ -1,0 +1,367 @@
+{% extends "base/base.html" %}
+
+{% block title %}
+Dashboard
+{% endblock %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="mb-0">Inicio</h2>
+        <small class="text-muted">Resumen financiero de {{ today|date:"F Y" }}</small>
+    </div>
+</div>
+
+<div class="d-flex flex-wrap gap-2 mb-4">
+    <a href="{% url 'transaction_create' %}" class="btn btn-primary">
+        <i class="fa-solid fa-plus"></i>
+        Nueva transacción
+    </a>
+    <a href="{% url 'transaction_list' %}" class="btn btn-outline-primary">
+        <i class="fa-solid fa-list"></i>
+        Ver transacciones
+    </a>
+    <a href="{% url 'categories:create' %}" class="btn btn-outline-success">
+        <i class="fa-solid fa-tags"></i>
+        Nueva categoría
+    </a>
+    <a href="{% url 'categories:list' %}" class="btn btn-outline-secondary">
+        <i class="fa-solid fa-tags"></i>
+        Ver categorías
+    </a>
+    <a href="{% url 'budgets:list' %}" class="btn btn-outline-primary">
+        Presupuestos
+    </a>
+    <a href="{% url 'goals:list' %}" class="btn btn-outline-primary">
+        <i class="fa-solid fa-bullseye"></i>
+        Metas
+    </a>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-3 col-md-6">
+        <div class="card dashboard-card shadow-sm h-100">
+            <div class="card-body text-center">
+                <i class="fa-solid fa-wallet fa-2x mb-3 text-primary"></i>
+                <h6>Saldo</h6>
+                <h3>{{ balance }} €</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6">
+        <div class="card dashboard-card shadow-sm h-100">
+            <div class="card-body text-center">
+                <i class="fa-solid fa-arrow-trend-up fa-2x mb-3 text-success"></i>
+                <h6>Ingresos</h6>
+                <h3 class="text-success">
+                    {{ total_income }} €
+                </h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6">
+        <div class="card dashboard-card shadow-sm h-100">
+            <div class="card-body text-center">
+                <i class="fa-solid fa-arrow-trend-down fa-2x mb-3 text-danger"></i>
+                <h6>Gastos</h6>
+                <h3 class="text-danger">
+                    {{ total_expense }} €
+                </h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6">
+        <div class="card dashboard-card shadow-sm h-100">
+            <div class="card-body text-center">
+                <i class="fa-solid fa-receipt fa-2x mb-3 text-warning"></i>
+                <h6>Transacciones</h6>
+                <h3>
+                    {{ total_transactions }}
+                </h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-3 mb-3">
+        <div class="card shadow-sm border-0">
+            <div class="card-body text-center">
+                <h6 class="text-muted">Categorías</h6>
+                <h3>{{ categories_count }}</h3>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3 mb-3">
+        <div class="card shadow-sm border-0">
+            <div class="card-body text-center">
+                <h6 class="text-muted">Mayor ingreso</h6>
+
+                {% if largest_income %}
+                    <h5 class="text-success">
+                        €{{ largest_income.amount }}
+                    </h5>
+                {% else %}
+                    <span class="text-muted">—</span>
+                {% endif %}
+
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3 mb-3">
+        <div class="card shadow-sm border-0">
+            <div class="card-body text-center">
+                <h6 class="text-muted">Mayor gasto</h6>
+
+                {% if largest_expense %}
+                    <h5 class="text-danger">
+                        €{{ largest_expense.amount }}
+                    </h5>
+                {% else %}
+                    <span class="text-muted">—</span>
+                {% endif %}
+
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3 mb-3">
+        <div class="card shadow-sm border-0">
+            <div class="card-body text-center">
+                <h6 class="text-muted">Transacciones del mes</h6>
+                <h3>{{ transactions_count }}</h3>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="alert alert-light border shadow-sm mt-4">
+
+    <h5 class="mb-3">Resumen del mes</h5>
+    
+    <div class="row">
+        <div class="col-md-6">
+            <strong>Categoría con mayor gasto:</strong>
+            {% if top_category %}
+                {{ top_category.category__name }}
+                ({{ top_category.total }} €)
+            {% else %}
+                Sin gastos registrados.
+            {% endif %}
+        </div>
+        <div class="col-md-6">
+            <strong>Balance:</strong>
+            {% if balance >= 0 %}
+                <span class="text-success">
+                    Positivo
+                </span>
+            {% else %}
+                <span class="text-danger">
+                    Negativo
+                </span>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div class="card shadow mt-4">
+    <div class="card-header">
+        <h5 class="mb-0">
+            Estado de presupuestos
+        </h5>
+    </div>
+
+    <div class="card-body">
+        <div class="row text-center">
+            <div class="col-md-4">
+                <h3 class="text-success">
+                    {{ budget_summary.success }}
+                </h3>
+                <p>Dentro del presupuesto</p>
+            </div>
+
+            <div class="col-md-4">
+                <h3 class="text-warning">
+                    {{ budget_summary.warning }}
+                </h3>
+                <p>En proceso</p>
+            </div>
+
+            <div class="col-md-4">
+                <h3 class="text-danger">
+                    {{ budget_summary.danger }}
+                </h3>
+                <p>Presupuestos Superados</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<hr class="my-5">
+
+<div class="row g-4">
+    <div class="col-lg-7">
+        <div class="card shadow-sm">
+            <div class="card-header">
+                <h5 class="mb-0">Últimas transacciones</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-hover align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Categoría</th>
+                            <th>Importe</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for transaction in transactions %}
+                        <tr>
+                            <td>{{ transaction.date }}</td>
+                            <td>
+                                {{ transaction.category }}
+                            </td>
+                            <td class="text-end">
+                                {% if transaction.transaction_type == "income" %}
+                                    <span class="text-success fw-bold"> + {{ transaction.amount }} € </span>
+                                {% else %}
+                                    <span class="text-danger fw-bold">
+                                        - {{ transaction.amount }} €
+                                    </span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="3" class="text-center">
+                                No hay movimientos registrados.
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-5">
+        <div class="card shadow-sm">
+            <div class="card-header">
+                <h5 class="mb-0">Gastos por categoría</h5>
+            </div>
+            <div class="card-body">
+                {% if expenses_by_category %}
+                    <canvas id="expensesChart"></canvas>
+                {% else %}
+                    <div class="text-center text-muted py-5">
+                        <i class="fa-solid fa-chart-pie fa-3x mb-3"></i>
+                        <p>Todavía no existen gastos registrados este mes.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow-sm mt-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">Presupuestos del mes</h5>
+        <a href="{% url 'budgets:list' %}" class="btn btn-sm btn-outline-primary">Ver todos</a>
+    </div>
+
+    <div class="card-body">
+        {% if budget_progress %}
+            {% for item in budget_progress %}
+                <div class="mb-4">
+                    <div class="d-flex justify-content-between">
+                        <strong>
+                            {{ item.budget.category.name }}
+                        </strong>
+
+                        <span>
+                            € {{ item.spent }}
+                            /
+                            € {{ item.budget.amount }}
+                        </span>
+                    </div>
+
+                    <div class="progress mt-2">
+                        <div
+                            class="progress-bar
+                            {% if item.percentage >= 100 %}
+                                bg-danger
+                            {% elif item.percentage >= 80 %}
+                                bg-warning
+                            {% else %}
+                                bg-success
+                            {% endif %}"
+
+                            style="width: {{ item.percentage }}%;">
+
+                            {{ item.percentage|floatformat:0 }}%
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p class="text-muted mb-0">No hay presupuestos para este mes.</p>
+        {% endif %}
+    </div>
+</div>
+
+{{ expenses_by_category|json_script:"expenses-data" }}
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const canvas = document.getElementById("expensesChart");
+        if (!canvas) return;
+
+        const expenses = JSON.parse(
+            document.getElementById("expenses-data").textContent
+        );
+
+        const labels = expenses.map(item => item.category__name);
+        const totals = expenses.map(item => Number(item.total));
+
+        new Chart(canvas, {
+            type: "pie",
+            data: {
+                labels: labels,
+                datasets: [{
+                    data: totals,
+
+                    backgroundColor: [
+                        "#0d6efd",
+                        "#198754",
+                        "#ffc107",
+                        "#dc3545",
+                        "#6f42c1",
+                        "#20c997",
+                        "#fd7e14",
+                        "#6610f2"
+                    ],
+
+                    borderColor: "#ffffff",
+
+                    borderWidth: 2
+                }]
+            },
+
+            options:{
+                responsive:true,
+                maintainAspectRatio:false,
+                plugins:{
+                    legend:{
+                        position:"bottom"
+                    }
+                }
+            },
+        });
+    });
+</script>
+
+{% endblock %}

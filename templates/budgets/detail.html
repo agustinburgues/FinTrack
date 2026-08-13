@@ -1,0 +1,112 @@
+{% extends "base/base.html" %}
+
+{% block title %}Detalle del presupuesto{% endblock %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="mb-0">{{ budget.category.name }}</h2>
+        <small class="text-muted">
+            {{ budget.get_month_display }} {{ budget.year }}
+        </small>
+    </div>
+
+    <div>
+        <a href="{% url 'budgets:list' %}" class="btn btn-outline-secondary"><i class="fa-solid fa-arrow-left"></i>Volver</a>
+
+        <a href="{% url 'budgets:update' budget.pk %}" class="btn btn-warning"><i class="fa-solid fa-pen"></i> Editar</a>
+    </div>
+</div>
+
+<div class="row g-4 mb-4">
+    <div class="col-md-4">
+        <div class="card shadow-sm text-center h-100">
+            <div class="card-body">
+                <i class="fa-solid fa-wallet fa-2x text-primary mb-3"></i>
+                <h6>Presupuesto</h6>
+                <h3>{{ budget.amount }} €</h3>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card shadow-sm text-center h-100">
+            <div class="card-body">
+                <i class="fa-solid fa-arrow-trend-down fa-2x text-danger mb-3"></i>
+                <h6>Gastado</h6>
+                <h3 class="text-danger"> {{ spent }} € </h3>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card shadow-sm text-center h-100">
+            <div class="card-body">
+                <i class="fa-solid fa-piggy-bank fa-2x text-success mb-3"></i>
+                <h6>Disponible</h6>
+                <h3 class="text-success">{{ remaining }} € </h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="card shadow-sm mb-4">
+    <div class="card-header">
+        <strong>Progreso del presupuesto</strong>
+    </div>
+
+    <div class="card-body">
+        <div class="progress" style="height:30px;">
+            <div class="progress-bar
+                {% if percentage >= 100 %}
+                    bg-danger
+                {% elif percentage >= 80 %}
+                    bg-warning text-dark
+                {% else %}
+                    bg-success
+                {% endif %}"
+                style="width:{{ percentage }}%;"
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="card shadow-sm">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <strong>Gastos del presupuesto</strong>
+        <a href="{% url 'transaction_create' %}" class="btn btn-primary btn-sm"><i class="fa-solid fa-plus"></i>Nueva transacción</a>
+    </div>
+
+    <div class="card-body">
+        {% if transactions %}
+        <table class="table table-hover align-middle">
+            <thead>
+                <tr>
+                    <th>Fecha</th>
+                    <th>Descripción</th>
+                    <th>Importe</th>
+                </tr>
+            </thead>
+
+            <tbody>
+            {% for transaction in transactions %}
+                <tr>
+                    <td>{{ transaction.date }}</td>
+                    <td>{{ transaction.description|default:"Sin descripción" }}</td>
+                    <td class="text-end text-danger fw-bold"> - {{ transaction.amount }} € </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+            <div class="text-center py-5">
+                <i class="fa-solid fa-receipt fa-3x text-muted mb-3"></i>
+                <p class="text-muted">Este presupuesto todavía no tiene gastos.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,160 @@
+{% extends "base/base.html" %}
+
+{% block title %}Detalle de la meta{% endblock %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="mb-0">{{ goal.name }}</h2>
+        {% if goal.target_date %}
+            <small class="text-muted">
+                Objetivo para {{ goal.target_date }}
+            </small>
+        {% endif %}
+    </div>
+
+    <div>
+        <a href="{% url 'goals:list' %}" class="btn btn-outline-secondary">
+            <i class="fa-solid fa-arrow-left"></i>
+            Volver
+        </a>
+
+        <a href="{% url 'goals:contribute' goal.pk %}" class="btn btn-success">
+            <i class="fa-solid fa-plus"></i>
+            Agregar dinero
+        </a>
+
+        <a href="{% url 'goals:update' goal.pk %}" class="btn btn-warning">
+            <i class="fa-solid fa-pen"></i>
+            Editar
+        </a>
+    </div>
+</div>
+
+
+<div class="row g-4 mb-4">
+    <div class="col-md-3">
+        <div class="card shadow-sm text-center h-100">
+            <div class="card-body">
+                <i class="fa-solid fa-bullseye fa-2x text-primary mb-3"></i>
+                <h6>Objetivo</h6>
+                <h3>€ {{ goal.target_amount }}</h3>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card shadow-sm text-center h-100">
+            <div class="card-body">
+                <i class="fa-solid fa-piggy-bank fa-2x text-success mb-3"></i>
+                <h6>Ahorrado</h6>
+                <h3 class="text-success"> € {{ goal.saved_amount }}</h3>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card shadow-sm text-center h-100">
+            <div class="card-body">
+                <i class="fa-solid fa-coins fa-2x text-warning mb-3"></i>
+                <h6>Restante</h6>
+                <h3 class="{% if remaining == 0 %}text-success{% else %}text-warning{% endif %}"> € {{ remaining }}</h3>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card shadow-sm text-center h-100">
+            <div class="card-body">
+                <i class="fa-solid fa-flag-checkered fa-2x text-info mb-3"></i>
+                <h6>Estado</h6>
+                <span class="badge
+                    {% if status_color == 'success' %}
+                        bg-success
+                    {% elif status_color == 'warning' %}
+                        bg-warning text-dark
+                    {% else %}
+                        bg-primary
+                    {% endif %}
+                fs-6">
+                    {{ status }}
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-header">
+        <strong>Progreso de la meta</strong>
+    </div>
+
+    <div class="card-body">
+        <div class="progress" style="height:30px;">
+            <div class="progress-bar
+                {% if status_color == 'success' %}
+                    bg-success
+                {% elif status_color == 'warning' %}
+                    bg-warning text-dark
+                {% else %}
+                    bg-primary
+                {% endif %}
+            "
+            style="width:{{ percentage }}%;">{{ percentage }}%</div>
+        </div>
+
+        {% if goal.description %}
+            <hr>
+            <h5>Descripción</h5>
+            <p class="mb-0">{{ goal.description }}</p>
+        {% endif %}
+    </div>
+</div>
+
+<div class="card shadow-sm mt-4">
+
+    <div class="card-header"><strong>Historial de aportes</strong></div>
+    <div class="card-body p-0">
+        {% if contributions %}
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Importe</th>
+                        <th>Nota</th>
+                        <th class="text-center">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for contribution in contributions %}
+                    <tr>
+                        <td>{{ contribution.created_at|date:"d/m/Y H:i" }}</td>
+                        <td class="text-success fw-bold"> € {{ contribution.amount }}</td>
+                        <td>
+                            {% if contribution.note %}
+                                {{ contribution.note }}
+                            {% else %}
+                                <span class="text-muted">Sin nota</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-center">
+                            <a href="{% url 'goals:contribution_update' contribution.pk %}" class="btn btn-sm btn-warning"><i class="fa-solid fa-pen"></i></a>
+                            
+                            <a href="{% url 'goals:contribution_delete' contribution.pk %}" class="btn btn-sm btn-danger"> <i class="fa-solid fa-trash"></i></a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="p-4 text-center text-muted">
+            <i class="fa-solid fa-piggy-bank fa-2x mb-3"></i>
+            <p class="mb-0">Todavía no registraste ningún aporte para esta meta.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

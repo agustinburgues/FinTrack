@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-    baseURL: "https://fintrack-wr8onrender.com/api/",
+    baseURL: "https://fintrack-wi01.onrender.com/api/",
     withCredentials: true,
 });
 

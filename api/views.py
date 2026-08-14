@@ -1,7 +1,7 @@
 from decimal import Decimal
 from datetime import datetime
 
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth import update_session_auth_hash
 from django.db.models import Sum, DecimalField, Value
@@ -205,6 +205,53 @@ def dashboard_api(request):
         "goals": goals_data,
 
     })
+
+@api_view(["POST"])
+@permission_classes([AllowAny])
+def register_api(request):
+
+    username = request.data.get("username")
+    password = request.data.get("password")
+    password_confirm = request.data.get("password_confirm")
+
+    if not username or not password or not password_confirm:
+        return Response(
+            {"error": "Todos los campos son obligatorios."},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+    if password != password_confirm:
+        return Response(
+            {"error": "Las contraseñas no coinciden."},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+    User = get_user_model()
+
+    if User.objects.filter(username=username).exists():
+        return Response(
+            {"error": "El nombre de usuario ya existe."},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+    if len(password) < 8:
+        return Response(
+            {"error": "La contraseña debe tener al menos 8 caracteres."},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+    user = User.objects.create_user(
+        username=username,
+        password=password
+    )
+
+    return Response(
+        {
+            "message": "Cuenta creada correctamente.",
+            "username": user.username
+        },
+        status=status.HTTP_201_CREATED
+    )
 
 @api_view(["POST"])
 @permission_classes([AllowAny])

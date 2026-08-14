@@ -4,6 +4,7 @@ from .views import dashboard_api, login_api, logout_api, csrf, me
 
 urlpatterns = [
     path("csrf/", csrf, name="csrf"),
+    path("register/", views.register_api, name="register_api"),
     path("login/", login_api, name="login_api"),
     path("logout/", logout_api, name="logout_api"),
     path("me/", me, name="me"),

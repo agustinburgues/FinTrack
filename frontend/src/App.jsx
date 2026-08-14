@@ -8,6 +8,7 @@ import {
 import api from "./services/api";
 
 import Login from "./pages/Login";
+import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import Transactions from "./pages/Transactions";
 import TransactionForm from "./pages/TransactionForm";
@@ -50,7 +51,10 @@ function App() {
             {!logged ? (
                 <>
                     <PublicNavbar />
-                    <Login onLogin={() => setLogged(true)}/>
+                    <Routes>
+                        <Route path="/" element={<Login onLogin={() => setLogged(true)} />}/>
+                        <Route path="/register" element={<Register />}/>
+                    </Routes>
                 </>
             ) : (
                 <Routes>

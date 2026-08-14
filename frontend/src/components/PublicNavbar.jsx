@@ -15,14 +15,7 @@ function PublicNavbar() {
                         Iniciar sesión
                     </button>
 
-                    <button
-                        type="button"
-                        className="btn btn-light"
-                        onClick={() => {
-                            window.location.href =
-                                "http://localhost:8000/accounts/register/";
-                        }}
-                    >
+                    <button type="button" className="btn btn-light" onClick={() => {window.location.href = "/register"}}>
                         Crear cuenta
                     </button>
                 </div>

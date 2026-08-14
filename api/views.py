@@ -211,12 +211,18 @@ def dashboard_api(request):
 def register_api(request):
 
     username = request.data.get("username")
+    first_name = request.data.get("first_name", "")
+    last_name = request.data.get("last_name", "")
+    email = request.data.get("email")
     password = request.data.get("password")
     password_confirm = request.data.get("password_confirm")
 
-    if not username or not password or not password_confirm:
+    # Campos obligatorios
+    if not username or not email or not password or not password_confirm:
         return Response(
-            {"error": "Todos los campos son obligatorios."},
+            {
+                "error": "Usuario, email, contraseña y confirmación de contraseña son obligatorios."
+            },
             status=status.HTTP_400_BAD_REQUEST
         )
 
@@ -234,6 +240,12 @@ def register_api(request):
             status=status.HTTP_400_BAD_REQUEST
         )
 
+    if User.objects.filter(email=email).exists():
+        return Response(
+            {"error": "El email ya está registrado."},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
     if len(password) < 8:
         return Response(
             {"error": "La contraseña debe tener al menos 8 caracteres."},
@@ -242,6 +254,9 @@ def register_api(request):
 
     user = User.objects.create_user(
         username=username,
+        email=email,
+        first_name=first_name,
+        last_name=last_name,
         password=password
     )
 

@@ -55,7 +55,7 @@ function Dashboard({ onLogout }) {
                         <SummaryCard title="Categorías" value={data.categories_count}/>
                         <SummaryCard title="Mayor ingreso" value={formatCurrency(data.highest_income)}/>
                         <SummaryCard title="Mayor gasto" value={formatCurrency(data.highest_expense)}/>
-                        <SummaryCard title="Mes actual" value={data.transactions_month}/>
+                        <SummaryCard title="Transacciones del mes actual" value={data.transactions_month}/>
                     </div>
                 </div>
 

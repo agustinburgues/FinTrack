@@ -163,8 +163,6 @@ class GoalContributionSerializer(serializers.ModelSerializer):
 
 class ProfileSerializer(serializers.ModelSerializer):
 
-    profile_picture = serializers.SerializerMethodField()
-
     class Meta:
         model = User
 
@@ -177,18 +175,27 @@ class ProfileSerializer(serializers.ModelSerializer):
             "profile_picture",
         ]
 
-    def get_profile_picture(self, obj):
+        extra_kwargs = {
+            "profile_picture": {
+                "required": False,
+                "allow_null": True,
+            }
+        }
 
-        if not obj.profile_picture:
-            return None
+    def to_representation(self, instance):
 
-        request = self.context.get("request")
+        data = super().to_representation(instance)
 
-        if request:
-            return request.build_absolute_uri(
-                obj.profile_picture.url
-            )
+        if instance.profile_picture:
+            request = self.context.get("request")
 
-        return obj.profile_picture.url
+            if request:
+                data["profile_picture"] = request.build_absolute_uri(
+                    instance.profile_picture.url
+                )
+            else:
+                data["profile_picture"] = instance.profile_picture.url
+        else:
+            data["profile_picture"] = None
 
-    
+        return data

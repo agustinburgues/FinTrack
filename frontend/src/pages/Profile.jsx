@@ -131,8 +131,6 @@ const handleSubmit = async (event) => {
                 headers: {
                     "X-CSRFToken":
                         csrfResponse.data.csrfToken,
-                    "Content-Type":
-                        "multipart/form-data",
                 },
             }
         );

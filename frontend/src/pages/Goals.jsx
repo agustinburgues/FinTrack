@@ -100,12 +100,19 @@ function Goals({ onLogout }) {
                                             </button>
 
                                             <div>
-                                                <button className="btn btn-outline-primary btn-sm me-2" onClick={() => navigate(`/goals/${goal.id}/edit`)}>
-                                                    <i className="fas fa-edit"></i>
+                                                <button className="btn btn-info btn-sm me-2 text-white" onClick={() => navigate(`/goals/${goal.id}`)}>
+                                                    <i className="fas fa-eye me-1"></i>
+                                                    Ver detalle
                                                 </button>
 
-                                                <button className="btn btn-outline-danger btn-sm" onClick={() => deleteGoal(goal.id)}>
-                                                    <i className="fas fa-trash"></i>
+                                                <button className="btn btn-warning btn-sm me-2" onClick={() => navigate(`/goals/${goal.id}/edit`)}>
+                                                    <i className="fas fa-edit me-1"></i>
+                                                    Editar
+                                                </button>
+
+                                                <button className="btn btn-danger btn-sm" onClick={() => deleteGoal(goal.id)}>
+                                                    <i className="fas fa-trash me-1"></i>
+                                                    Eliminar
                                                 </button>
                                             </div>
                                         </div>

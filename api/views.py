@@ -696,6 +696,45 @@ def budget_detail_api(request, pk):
         )
 
     if request.method == "GET":
+        spent = (
+            Transaction.objects.filter(
+                user=request.user,
+                category=budget.category,
+                transaction_type="expense",
+                date__year=budget.year,
+                date__month=budget.month,
+            )
+            .aggregate(
+                total=Coalesce(
+                    Sum("amount"),
+                    Value(0),
+                    output_field=DecimalField(
+                        max_digits=10,
+                        decimal_places=2,
+                    ),
+                )
+            )["total"]
+        )
+
+        remaining = budget.amount - spent
+
+        percentage = 0
+
+        if budget.amount > 0:
+            percentage = round(
+                float(spent / budget.amount * 100),
+                1
+            )
+
+        if spent >= budget.amount:
+            status_text = "Superado"
+            budget_status = "danger"
+        elif spent >= budget.amount * Decimal("0.80"):
+            status_text = "Atención"
+            budget_status = "warning"
+        else:
+            status_text = "Correcto"
+            budget_status = "success"
 
         serializer = BudgetSerializer(
             budget,
@@ -704,7 +743,15 @@ def budget_detail_api(request, pk):
             }
         )
 
-        return Response(serializer.data)
+        data = serializer.data
+
+        data["spent"] = float(spent)
+        data["remaining"] = float(remaining)
+        data["percentage"] = percentage
+        data["status"] = budget_status
+        data["status_text"] = status_text
+
+        return Response(data)
 
     if request.method == "PUT":
 
